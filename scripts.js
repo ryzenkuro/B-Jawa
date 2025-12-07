@@ -110,9 +110,56 @@ function setupCards() {
             textContent.innerHTML = `<p>Informasi detail tentang ${cardTitle} akan ditampilkan di sini.</p><h3>${cardTitle}</h3>`;
         }
 
-        card.addEventListener('click', () => {
+        // Support both click and touch events for mobile
+        let touchStartTime = 0;
+        let touchStartPos = { x: 0, y: 0 };
+        let isTouch = false;
+
+        const handleCardActivation = (e) => {
+            // Check if card is already active - if so, close it
+            if (card.classList.contains('active')) {
+                card.classList.remove('active');
+                return;
+            }
+
+            // Otherwise, activate this card and deactivate others
             cards.forEach(c => c.classList.remove('active'));
             card.classList.add('active');
+        };
+
+        // Touch events for mobile - prevent double-tap zoom
+        card.addEventListener('touchstart', (e) => {
+            isTouch = true;
+            touchStartTime = Date.now();
+            const touch = e.touches[0];
+            touchStartPos = { x: touch.clientX, y: touch.clientY };
+        }, { passive: true });
+
+        card.addEventListener('touchend', (e) => {
+            const touchEndTime = Date.now();
+            const touch = e.changedTouches[0];
+            touchEndPos = { x: touch.clientX, y: touch.clientY };
+            
+            // Calculate distance moved
+            const deltaX = Math.abs(touchEndPos.x - touchStartPos.x);
+            const deltaY = Math.abs(touchEndPos.y - touchStartPos.y);
+            const timeDiff = touchEndTime - touchStartTime;
+            
+            // Only activate if it's a tap (not a swipe) and quick tap
+            if (deltaX < 15 && deltaY < 15 && timeDiff < 400) {
+                e.preventDefault();
+                handleCardActivation(e);
+                // Reset touch flag after a short delay
+                setTimeout(() => { isTouch = false; }, 300);
+            }
+        }, { passive: false });
+
+        // Click event for desktop (but not if it was triggered by touch)
+        card.addEventListener('click', (e) => {
+            // Only handle click if it wasn't from a touch event
+            if (!isTouch) {
+                handleCardActivation(e);
+            }
         });
     });
 }

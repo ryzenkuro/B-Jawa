@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setupTeamLogoAnimation();
     setupTeamMembersToggle();
     setupFeaturedContributor();
+    setupHamburgerMenu();
     if (typeof setupTeamInteractive === 'function') setupTeamInteractive();
 });
 
@@ -449,4 +450,78 @@ function setupFeaturedContributor() {
             }, 10);
         }
     });
+}
+
+function setupHamburgerMenu() {
+    const hamburger = document.getElementById('hamburger');
+    const navMenu = document.getElementById('nav-menu');
+    const navLinks = navMenu ? navMenu.querySelectorAll('a') : [];
+
+    if (!hamburger || !navMenu) return;
+
+    // Toggle menu
+    hamburger.addEventListener('click', (e) => {
+        e.stopPropagation();
+        hamburger.classList.toggle('active');
+        navMenu.classList.toggle('active');
+        document.body.style.overflow = navMenu.classList.contains('active') ? 'hidden' : '';
+    });
+
+    // Close menu when clicking on a link
+    navLinks.forEach(link => {
+        link.addEventListener('click', () => {
+            hamburger.classList.remove('active');
+            navMenu.classList.remove('active');
+            document.body.style.overflow = '';
+        });
+    });
+
+    // Close menu when clicking on overlay (nav::after)
+    navMenu.addEventListener('click', (e) => {
+        // Check if clicking on the overlay (outside the ul)
+        if (e.target === navMenu || (e.target.tagName !== 'A' && !e.target.closest('ul'))) {
+            hamburger.classList.remove('active');
+            navMenu.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+    });
+
+    // Close menu when clicking outside
+    document.addEventListener('click', (e) => {
+        if (navMenu.classList.contains('active') && 
+            !navMenu.contains(e.target) && 
+            !hamburger.contains(e.target)) {
+            hamburger.classList.remove('active');
+            navMenu.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+    });
+
+    // Close menu on window resize (if resizing to desktop)
+    window.addEventListener('resize', () => {
+        if (window.innerWidth > 768 && navMenu.classList.contains('active')) {
+            hamburger.classList.remove('active');
+            navMenu.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+    });
+
+    // Prevent body scroll when menu is open on mobile
+    let lastScrollY = 0;
+    navMenu.addEventListener('touchmove', (e) => {
+        if (navMenu.classList.contains('active')) {
+            // Allow scrolling within menu
+            const scrollTop = navMenu.scrollTop;
+            const scrollHeight = navMenu.scrollHeight;
+            const height = navMenu.clientHeight;
+            const isScrollingAtTop = scrollTop === 0;
+            const isScrollingAtBottom = scrollTop + height >= scrollHeight - 1;
+            
+            if (isScrollingAtTop && e.touches[0].clientY > lastScrollY) {
+                e.preventDefault();
+            } else if (isScrollingAtBottom && e.touches[0].clientY < lastScrollY) {
+                e.preventDefault();
+            }
+        }
+    }, { passive: false });
 }

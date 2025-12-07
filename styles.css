@@ -483,12 +483,17 @@ nav ul li a:hover::before {
 }
 
 /* Text content styling - Enhanced */
+.text-content {
+    text-align: left;
+}
+
 .text-content p {
     font-size: 0.9375rem;
     line-height: 1.7;
     margin-bottom: 16px;
-    text-align: justify;
+    text-align: left;
     opacity: 0.95;
+    width: 100%;
 }
 
 .text-content h3 {
@@ -496,6 +501,56 @@ nav ul li a:hover::before {
     font-weight: 700;
     margin-top: 16px;
     letter-spacing: -0.01em;
+    text-align: center;
+    width: 100%;
+}
+
+/* Mobile adjustments for text content */
+@media (max-width: 768px) {
+    .card .text-content {
+        padding: 24px 20px;
+        overflow-y: auto;
+        justify-content: flex-start;
+        align-items: flex-start;
+    }
+
+    .text-content {
+        text-align: left;
+    }
+
+    .text-content p {
+        font-size: 0.875rem;
+        line-height: 1.6;
+        margin-bottom: 12px;
+        text-align: left;
+    }
+
+    .text-content h3 {
+        font-size: 1.25rem;
+        margin-top: 16px;
+        text-align: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .card .text-content {
+        padding: 20px 16px;
+        justify-content: flex-start;
+        align-items: flex-start;
+    }
+
+    .text-content p {
+        font-size: 0.8125rem;
+        line-height: 1.5;
+        margin-bottom: 10px;
+        text-align: left;
+    }
+
+    .text-content h3 {
+        font-size: 1.125rem;
+        margin-top: 12px;
+        text-align: center;
+    }
 }
 
 /* Other sections */

@@ -138,7 +138,7 @@ function setupCards() {
         card.addEventListener('touchend', (e) => {
             const touchEndTime = Date.now();
             const touch = e.changedTouches[0];
-            touchEndPos = { x: touch.clientX, y: touch.clientY };
+            const touchEndPos = { x: touch.clientX, y: touch.clientY };
             
             // Calculate distance moved
             const deltaX = Math.abs(touchEndPos.x - touchStartPos.x);
@@ -146,11 +146,15 @@ function setupCards() {
             const timeDiff = touchEndTime - touchStartTime;
             
             // Only activate if it's a tap (not a swipe) and quick tap
-            if (deltaX < 15 && deltaY < 15 && timeDiff < 400) {
+            if (deltaX < 20 && deltaY < 20 && timeDiff < 500) {
                 e.preventDefault();
+                e.stopPropagation();
                 handleCardActivation(e);
                 // Reset touch flag after a short delay
                 setTimeout(() => { isTouch = false; }, 300);
+            } else {
+                // Reset touch flag if it wasn't a tap
+                setTimeout(() => { isTouch = false; }, 100);
             }
         }, { passive: false });
 

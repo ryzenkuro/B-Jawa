@@ -967,6 +967,13 @@ footer {
     margin-bottom: 0;
 }
 
+.team-see-less-wrapper {
+    display: none;
+    margin-top: 60px;
+    text-align: center;
+    padding: 20px 0;
+}
+
 .team-group-title {
     font-size: 2.5rem;
     color: #ffffff;

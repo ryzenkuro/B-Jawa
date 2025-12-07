@@ -255,123 +255,156 @@ function setupTeamInteractive() {
     }, { passive: true });
 }
 
-function setupTeamMembersToggle() {
-    const toggleButton = document.getElementById('toggleTeamMembers');
+function toggleTeamMembers(isExpanding) {
+    const toggleButtonTop = document.getElementById('toggleTeamMembers');
+    const toggleButtonBottom = document.getElementById('toggleTeamMembersBottom');
     const teamMembersWrapper = document.getElementById('teamMembersWrapper');
+    const seeLessWrapper = document.querySelector('.team-see-less-wrapper');
 
-    if (!toggleButton || !teamMembersWrapper) return;
+    if (!teamMembersWrapper) return;
 
-    toggleButton.addEventListener('click', function (e) {
-        e.preventDefault();
-        const isExpanded = teamMembersWrapper.classList.contains('expanded');
+    if (isExpanding) {
+        // Expand
+        teamMembersWrapper.classList.add('expanded');
+        if (toggleButtonTop) toggleButtonTop.style.display = 'none';
+        if (seeLessWrapper) seeLessWrapper.style.display = 'block';
 
-        if (isExpanded) {
-            // Collapse
-            teamMembersWrapper.classList.remove('expanded');
-            toggleButton.textContent = 'See More';
+        // Smooth scroll to expanded section
+        const offset = 60;
+        const top = teamMembersWrapper.getBoundingClientRect().top + window.scrollY - offset;
+        window.scrollTo({ top, behavior: 'smooth' });
 
-            // Reset all elements to initial state with animation
-            const contactSection = document.getElementById('contact');
-            const footer = document.querySelector('footer');
-            const container = document.querySelector('.container');
-            const main = document.querySelector('main');
-
-            // Add animation class to contact section before resetting
-            if (contactSection) {
-                // Remove all inline styles first
-                contactSection.removeAttribute('style');
-                // Reset class to original (remove any added classes)
-                contactSection.className = 'contact';
-                // Ensure data-aos attribute exists with correct value
-                contactSection.setAttribute('data-aos', 'fade-up');
-                // Remove any data attributes that might have been added
-                const dataAttrs = contactSection.getAttributeNames().filter(attr => attr.startsWith('data-') && attr !== 'data-aos');
-                dataAttrs.forEach(attr => contactSection.removeAttribute(attr));
-                
-                // Add animation class for fade-in effect
-                contactSection.classList.add('contact-reset-animate');
-                // Force reflow to apply changes
-                void contactSection.offsetHeight;
-            }
-
-            // Reset footer - restore to original state with animation
-            if (footer) {
-                footer.removeAttribute('style');
-                footer.className = '';
-                const footerDataAttrs = footer.getAttributeNames().filter(attr => attr.startsWith('data-'));
-                footerDataAttrs.forEach(attr => footer.removeAttribute(attr));
-                
-                // Add animation class for fade-in effect
-                footer.classList.add('footer-reset-animate');
-                void footer.offsetHeight;
-            }
-
-            // Reset container if it has any inline styles
-            if (container) {
-                container.removeAttribute('style');
-                void container.offsetHeight;
-            }
-
-            // Reset main if it has any inline styles
-            if (main) {
-                main.removeAttribute('style');
-                void main.offsetHeight;
-            }
-
-            // Wait for collapse transition to complete, then trigger animations
+        // Re-initialize AOS for newly visible elements
+        if (typeof AOS !== 'undefined' && AOS && typeof AOS.refresh === 'function') {
             setTimeout(() => {
-                // Re-initialize AOS to ensure animations work correctly
-                if (typeof AOS !== 'undefined' && AOS) {
-                    if (typeof AOS.refresh === 'function') {
-                        AOS.refresh();
-                    }
-                    if (typeof AOS.init === 'function') {
-                        AOS.init({
-                            duration: 800,
-                            once: false, // Allow animation to trigger again
-                            offset: 100
-                        });
-                    }
-                }
-
-                // Remove animation classes after animation completes
-                setTimeout(() => {
-                    if (contactSection) {
-                        contactSection.classList.remove('contact-reset-animate');
-                    }
-                    if (footer) {
-                        footer.classList.remove('footer-reset-animate');
-                    }
-                }, 800);
-
-                // Scroll to team section after everything is reset
-                setTimeout(() => {
-                    const teamSection = document.getElementById('team');
-                    if (teamSection) {
-                        const offset = 60;
-                        const top = teamSection.getBoundingClientRect().top + window.scrollY - offset;
-                        window.scrollTo({ top, behavior: 'smooth' });
-                    }
-                }, 100);
-            }, 650); // Wait for transition (600ms) + small buffer
-        } else {
-            // Expand
-            teamMembersWrapper.classList.add('expanded');
-            toggleButton.textContent = 'See Less';
-
-            // Smooth scroll to expanded section
-            const offset = 60;
-            const top = teamMembersWrapper.getBoundingClientRect().top + window.scrollY - offset;
-            window.scrollTo({ top, behavior: 'smooth' });
-
-            // Re-initialize AOS for newly visible elements
-            if (typeof AOS !== 'undefined' && AOS && typeof AOS.refresh === 'function') {
-                setTimeout(() => {
-                    AOS.refresh();
-                }, 400);
-            }
+                AOS.refresh();
+            }, 400);
         }
-    });
+    } else {
+        // Collapse
+        teamMembersWrapper.classList.remove('expanded');
+        if (toggleButtonTop) {
+            toggleButtonTop.textContent = 'See More';
+            toggleButtonTop.style.display = 'inline-block';
+        }
+        if (seeLessWrapper) seeLessWrapper.style.display = 'none';
+
+        // Reset all elements to initial state with animation
+        const contactSection = document.getElementById('contact');
+        const footer = document.querySelector('footer');
+        const container = document.querySelector('.container');
+        const main = document.querySelector('main');
+
+        // Add animation class to contact section before resetting
+        if (contactSection) {
+            // Remove all inline styles first
+            contactSection.removeAttribute('style');
+            // Reset class to original (remove any added classes)
+            contactSection.className = 'contact';
+            // Ensure data-aos attribute exists with correct value
+            contactSection.setAttribute('data-aos', 'fade-up');
+            // Remove any data attributes that might have been added
+            const dataAttrs = contactSection.getAttributeNames().filter(attr => attr.startsWith('data-') && attr !== 'data-aos');
+            dataAttrs.forEach(attr => contactSection.removeAttribute(attr));
+            
+            // Add animation class for fade-in effect
+            contactSection.classList.add('contact-reset-animate');
+            // Force reflow to apply changes
+            void contactSection.offsetHeight;
+        }
+
+        // Reset footer - restore to original state with animation
+        if (footer) {
+            footer.removeAttribute('style');
+            footer.className = '';
+            const footerDataAttrs = footer.getAttributeNames().filter(attr => attr.startsWith('data-'));
+            footerDataAttrs.forEach(attr => footer.removeAttribute(attr));
+            
+            // Add animation class for fade-in effect
+            footer.classList.add('footer-reset-animate');
+            void footer.offsetHeight;
+        }
+
+        // Reset container if it has any inline styles
+        if (container) {
+            container.removeAttribute('style');
+            void container.offsetHeight;
+        }
+
+        // Reset main if it has any inline styles
+        if (main) {
+            main.removeAttribute('style');
+            void main.offsetHeight;
+        }
+
+        // Wait for collapse transition to complete, then trigger animations
+        setTimeout(() => {
+            // Re-initialize AOS to ensure animations work correctly
+            if (typeof AOS !== 'undefined' && AOS) {
+                if (typeof AOS.refresh === 'function') {
+                    AOS.refresh();
+                }
+                if (typeof AOS.init === 'function') {
+                    AOS.init({
+                        duration: 800,
+                        once: false, // Allow animation to trigger again
+                        offset: 100
+                    });
+                }
+            }
+
+            // Remove animation classes after animation completes
+            setTimeout(() => {
+                if (contactSection) {
+                    contactSection.classList.remove('contact-reset-animate');
+                }
+                if (footer) {
+                    footer.classList.remove('footer-reset-animate');
+                }
+            }, 800);
+
+            // Scroll to team section after everything is reset
+            setTimeout(() => {
+                const teamSection = document.getElementById('team');
+                if (teamSection) {
+                    const offset = 60;
+                    const top = teamSection.getBoundingClientRect().top + window.scrollY - offset;
+                    window.scrollTo({ top, behavior: 'smooth' });
+                }
+            }, 100);
+        }, 650); // Wait for transition (600ms) + small buffer
+    }
+}
+
+function setupTeamMembersToggle() {
+    const toggleButtonTop = document.getElementById('toggleTeamMembers');
+    const toggleButtonBottom = document.getElementById('toggleTeamMembersBottom');
+    const teamMembersWrapper = document.getElementById('teamMembersWrapper');
+    const seeLessWrapper = document.querySelector('.team-see-less-wrapper');
+
+    if (!teamMembersWrapper) return;
+
+    // Hide bottom button initially
+    if (seeLessWrapper) {
+        seeLessWrapper.style.display = 'none';
+    }
+
+    // Top button (See More)
+    if (toggleButtonTop) {
+        toggleButtonTop.addEventListener('click', function (e) {
+            e.preventDefault();
+            const isExpanded = teamMembersWrapper.classList.contains('expanded');
+            toggleTeamMembers(!isExpanded);
+        });
+    }
+
+    // Bottom button (See Less)
+    if (toggleButtonBottom) {
+        toggleButtonBottom.addEventListener('click', function (e) {
+            e.preventDefault();
+            toggleTeamMembers(false);
+        });
+    }
 }
 
 function setupFeaturedContributor() {

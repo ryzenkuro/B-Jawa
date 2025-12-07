@@ -289,6 +289,14 @@ function toggleTeamMembers(isExpanding) {
         }
         if (seeLessWrapper) seeLessWrapper.style.display = 'none';
 
+        // Scroll to "Members Of The Group" heading immediately
+        const membersHeading = document.getElementById('membersOfTheGroup');
+        if (membersHeading) {
+            const offset = 60;
+            const top = membersHeading.getBoundingClientRect().top + window.scrollY - offset;
+            smoothScrollTo(top, 500);
+        }
+
         // Reset all elements to initial state with animation
         const contactSection = document.getElementById('contact');
         const footer = document.querySelector('footer');
@@ -362,16 +370,6 @@ function toggleTeamMembers(isExpanding) {
                     footer.classList.remove('footer-reset-animate');
                 }
             }, 800);
-
-            // Scroll to team section after everything is reset
-            setTimeout(() => {
-                const teamSection = document.getElementById('team');
-                if (teamSection) {
-                    const offset = 60;
-                    const top = teamSection.getBoundingClientRect().top + window.scrollY - offset;
-                    window.scrollTo({ top, behavior: 'smooth' });
-                }
-            }, 100);
         }, 650); // Wait for transition (600ms) + small buffer
     }
 }
